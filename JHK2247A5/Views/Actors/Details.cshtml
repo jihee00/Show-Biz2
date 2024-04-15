@@ -1,0 +1,187 @@
+﻿@model JHK2247A5.Models.ActorWithShowInfoViewModel
+
+@{
+    ViewBag.Title = "Actor Details";
+    var userAccount = new JHK2247A5.Controllers.RequestUser(User as System.Security.Claims.ClaimsPrincipal);
+}
+
+<h2>@Html.DisplayFor(model => model.Name)</h2>
+
+<div>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.AlternateName)
+        </dt>
+
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.AlternateName)
+        </dd>
+
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.BirthDate)
+        </dt>
+
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.BirthDate)
+        </dd>
+
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Height)
+        </dt>
+
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Height)
+        </dd>
+
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.ImageUrl)
+        </dt>
+
+        <dd class="col-sm-10">
+            <img src="@Model.ImageUrl" style="max-width: 150px; max-height: 150px;" />
+        </dd>
+
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Executive)
+        </dt>
+
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Executive)
+        </dd>
+    </dl>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.ShowsCount)<br />
+            <span class="badge bg-secondary">@Model.ShowsCount shows</span>
+        </dt>
+
+        <dd class="col-sm-10">
+            @foreach (var show in Model.Shows.OrderBy(s => s.Name))
+            {
+                <span>@show.Name</span><br />
+            }
+        </dd>
+    </dl>
+    @if (!string.IsNullOrWhiteSpace(Model.Biography))
+    {
+        <hr />
+        <dl class="row">
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Biography)
+            </dt>
+
+            <dd class="col-sm-10 well bg-light rounded border">
+                <div class="panel panel-default panel-body">
+                    @Html.Raw(Model.Biography)
+                </div>
+            </dd>
+        </dl>
+    }
+
+    @if (Model.Photos.Count() != 0)
+    {
+        <hr />
+        <dl class="row">
+            <dt class="col-sm-2">
+                Photos
+            </dt>
+            <dd class="col-sm-10">
+                @foreach (var photo in Model.Photos.OrderBy(p => p.Caption))
+                {
+                    <div>
+                        <img src="@Url.Action("MediaItemDownload", "Actors", new { id = photo.Id })" alt="@photo.Caption" style="max-width: 150px; max-height: 200px;">
+                        <br>
+                        <small>@photo.Caption</small><br>
+                    </div>
+                }
+            </dd>
+        </dl>
+    }
+
+    @if (Model.Documents.Any(d => d.ContentType == "application/pdf"))
+    {
+        <hr />
+        <dl class="row">
+            <dt class="col-sm-2">
+                Documents
+            </dt>
+            <dd class="col-sm-10">
+                @foreach (var doc in Model.Documents.Where(d => d.ContentType == "application/pdf").OrderBy(d => d.Caption))
+                {
+                    <div>
+                        <a href="@Url.Action("MediaItemDownload", "Actors", new { id = doc.Id })" download="@doc.Caption + " .pdf" title="Download PDF"><br>
+                            <img src="@Url.Content("~/Content/Images/icon-pdf.png")" alt="PDF" style="vertical-align: middle;"><br>
+                            <small>@doc.Caption</small>
+                        </a>
+                    </div>
+                }
+            </dd>
+        </dl>
+    }
+
+    @if (Model.AudioClips.Count() != 0)
+    {
+        <hr />
+        <dl class="row">
+            <dt class="col-sm-2">
+                Audio Clips
+            </dt>
+            <dd class="col-sm-10">
+                @foreach (var clip in Model.AudioClips.OrderBy(c => c.Caption))
+                {
+                    <audio controls>
+                        <source src="@Url.Action("MediaItemDownload", "Actors", new { id = clip.Id })" type="@clip.ContentType">
+                        Your browser does not support the audio element.
+                    </audio>
+                    <br>
+                    <small>@clip.Caption</small><br>
+                }
+            </dd>
+        </dl>
+    }
+
+    @if (Model.VideoClips.Any())
+    {
+        <hr />
+        <dl class="row">
+            <dt class="col-sm-2">
+                Video Clips
+            </dt>
+            <dd class="col-sm-10">
+                @foreach (var clip in Model.VideoClips.OrderBy(c => c.Caption))
+                {
+                    <video controls style="max-width: 100%; height: auto;">
+                        <source src="@Url.Action("MediaItemDownload", "Actors", new { id = clip.Id })" type="@clip.ContentType">
+                        Your browser does not support the video tag.
+                    </video>
+                    <br>
+                    <small>@clip.Caption</small><br>
+                }
+            </dd>
+        </dl>
+     }
+    </div>
+<p>
+    @using System.Security.Claims;
+    @if ((User as ClaimsPrincipal).HasClaim(ClaimTypes.Role, "Executive"))
+    {
+        @Html.ActionLink("Add Media Item", "AddContent", new { id = Model.Id })
+    }
+    |
+    @using System.Security.Claims;
+    @if ((User as ClaimsPrincipal).HasClaim(ClaimTypes.Role, "Coordinator"))
+    {
+        @Html.ActionLink("Add New Show", "AddShow", new { id = Model.Id })
+    }
+    | @Html.ActionLink("Back to List", "Index")
+</p>

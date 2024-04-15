@@ -1,0 +1,74 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="JHK2247A5" />
+    <meta name="application-name" content="2241-5f12b092-4dee-4e72-ad57-96b8a2549cc3" />
+    <title>@ViewBag.Title</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    @{
+        var userAccount = new JHK2247A5.Controllers.RequestUser(User as System.Security.Claims.ClaimsPrincipal);
+    }
+</head>
+<body>
+    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark">
+        <div class="container">
+            @Html.ActionLink("Show Biz II", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" title="Toggle navigation" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse d-sm-inline-flex justify-content-between">
+                <ul class="navbar-nav flex-grow-1">
+                    <li>@Html.ActionLink("Home", "Index", "Home", new { area = "" }, new { @class = "nav-link" })</li>
+                    <li>@Html.ActionLink("Genres", "Index", "Genres", new { area = "" }, new { @class = "nav-link" })</li>
+                    <li>@Html.ActionLink("Actors", "Index", "Actors", new { area = "" }, new { @class = "nav-link" })</li>
+                    <li>@Html.ActionLink("Shows", "Index", "Shows", new { area = "" }, new { @class = "nav-link" })</li>
+                    <li>@Html.ActionLink("Episodes", "Index", "Episodes", new { area = "" }, new { @class = "nav-link" })</li>
+                    
+                    <li class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">Load Data</a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li><a href="@Url.Action("Roles", "LoadData")" class="dropdown-item">Roles</a></li>
+
+                            @using System.Security.Claims;
+                            @if ((User as ClaimsPrincipal).HasClaim(ClaimTypes.Role, "Administrator"))
+                            {
+                                <li><a href="@Url.Action("Genres", "LoadData")" class="dropdown-item">Genres</a></li>
+                                <li><a href="@Url.Action("Actors", "LoadData")" class="dropdown-item">Actors</a></li>
+                                <li><a href="@Url.Action("Shows", "LoadData")" class="dropdown-item">Shows</a></li>
+                                <li><a href="@Url.Action("Episodes", "LoadData")" class="dropdown-item">Episodes</a></li>
+                                <li><a href="@Url.Action("Remove", "LoadData")" class="dropdown-item">Remove Data</a></li>
+                                <li><a href="@Url.Action("RemoveDatabase", "LoadData")" class="dropdown-item">Remove Database</a></li>
+                            }
+                        </ul>
+                    </li>
+                </ul>
+             @Html.Partial("_LoginPartial")
+            </div>
+        </div>
+    </nav>
+    <div class="container body-content">
+        @RenderBody()
+        <hr />
+        <footer>
+            <p>
+                <small>
+                    By submitting this assignment you agree to the following:
+                    I declare that this assignment is my own work in accordance with the Seneca Academic
+                    Policy. No part of this assignment has been copied manually or electronically from
+                    any other source (including web sites) or distributed to other students.
+                </small>
+            </p>
+            <p>&copy; Jihee Kim, jkim541@myseneca.ca, WEB524, Winter 2024</p>
+        </footer>
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    <script src="@Html.Raw("https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js")" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+</body>
+</html>
